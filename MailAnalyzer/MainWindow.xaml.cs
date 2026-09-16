@@ -1,24 +1,302 @@
-﻿using System.Text;
+﻿using Microsoft.Win32;
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace MailAnalyzer
+namespace MailAnalyzer;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private readonly ObservableCollection<EmailResult> _results = new();
+
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+
+        ResultsGrid.ItemsSource = _results;
+
+        UpdateCounters();
+    }
+
+    // Загрузка TXT
+
+    private void LoadFileButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
         {
-            InitializeComponent();
+            Title = "Выберите текстовый файл",
+            Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*",
+            Multiselect = false
+        };
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        try
+        {
+            InputTextBox.Text = File.ReadAllText(
+                dialog.FileName,
+                Encoding.UTF8);
+
+            MessageBox.Show(
+                "Файл успешно загружен.",
+                "MailAnalyzer",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
         }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Не удалось прочитать файл.\n\n{ex.Message}",
+                "Ошибка",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    // Очистка
+
+    private void ClearButton_Click(object sender, RoutedEventArgs e)
+    {
+        InputTextBox.Clear();
+
+        _results.Clear();
+
+        UpdateCounters();
+    }
+
+    // Анализ
+
+    private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(InputTextBox.Text))
+        {
+            MessageBox.Show(
+                "Введите или загрузите текст для анализа.",
+                "Нет исходного текста",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+
+            return;
+        }
+
+        // Анализ e-mail будет реализован когда-нибудб
+
+        MessageBox.Show(
+            "Модуль анализа e-mail будет подключён на следующем этапе разработки.",
+            "MailAnalyzer",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+    }
+
+
+    // Копирование
+
+    private void CopyButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_results.Count == 0)
+        {
+            MessageBox.Show(
+                "Нет результатов для копирования.",
+                "MailAnalyzer",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            return;
+        }
+
+        var text = string.Join(
+            Environment.NewLine,
+            _results.Select(result => result.Email));
+
+        Clipboard.SetText(text);
+
+        MessageBox.Show(
+            "Адреса скопированы в буфер обмена.",
+            "MailAnalyzer",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+    }
+
+    // Экспорт TXT
+
+    private void ExportTxtButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_results.Count == 0)
+        {
+            MessageBox.Show(
+                "Нет результатов для экспорта.",
+                "MailAnalyzer",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            return;
+        }
+
+        var dialog = new SaveFileDialog
+        {
+            Title = "Сохранить результаты",
+            Filter = "Текстовые файлы (*.txt)|*.txt",
+            DefaultExt = ".txt",
+            FileName = "emails.txt"
+        };
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        try
+        {
+            var text = string.Join(
+                Environment.NewLine,
+                _results.Select(result => result.Email));
+
+            File.WriteAllText(
+                dialog.FileName,
+                text,
+                Encoding.UTF8);
+
+            MessageBox.Show(
+                "Результаты успешно сохранены.",
+                "MailAnalyzer",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Не удалось сохранить файл.\n\n{ex.Message}",
+                "Ошибка",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    // Экспорт CSV
+
+    private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_results.Count == 0)
+        {
+            MessageBox.Show(
+                "Нет результатов для экспорта.",
+                "MailAnalyzer",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            return;
+        }
+
+        var dialog = new SaveFileDialog
+        {
+            Title = "Сохранить результаты",
+            Filter = "CSV-файлы (*.csv)|*.csv",
+            DefaultExt = ".csv",
+            FileName = "emails.csv"
+        };
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        try
+        {
+            var builder = new StringBuilder();
+
+            builder.AppendLine("№;E-mail адрес;Источник");
+
+            foreach (var result in _results)
+            {
+                builder.AppendLine(
+                    $"{result.Number};{result.Email};{result.Source}");
+            }
+
+            File.WriteAllText(
+                dialog.FileName,
+                builder.ToString(),
+                Encoding.UTF8);
+
+            MessageBox.Show(
+                "CSV-файл успешно сохранён.",
+                "MailAnalyzer",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Не удалось сохранить CSV-файл.\n\n{ex.Message}",
+                "Ошибка",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    // Почтовый клиент
+
+    private void MailClientButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_results.Count == 0)
+        {
+            MessageBox.Show(
+                "Нет адресов для открытия в почтовом клиенте.",
+                "MailAnalyzer",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            return;
+        }
+
+        var address = _results.First().Email;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = $"mailto:{address}",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Не удалось открыть почтовый клиент.\n\n{ex.Message}",
+                "Ошибка",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    // Изменение текста
+
+    private void InputTextBox_TextChanged(object sender,
+        System.Windows.Controls.TextChangedEventArgs e)
+    {
+        // Не забыть обновлять здесь счётчик символов и состояние кнопок.
+    }
+
+    // Счётчики
+
+    private void UpdateCounters()
+    {
+        TotalCountText.Text = _results.Count.ToString();
+        UniqueCountText.Text = _results
+            .Select(result => result.Email)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count()
+            .ToString();
+    }
+
+    // Временная модель результата
+
+    private class EmailResult
+    {
+        public int Number { get; set; }
+
+        public string Email { get; set; } = string.Empty;
+
+        public string Source { get; set; } = string.Empty;
     }
 }

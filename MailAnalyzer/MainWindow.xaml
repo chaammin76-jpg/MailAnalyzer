@@ -1,12 +1,503 @@
 ﻿<Window x:Class="MailAnalyzer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MailAnalyzer"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MailAnalyzer"
+        Width="1100"
+        Height="944"
+        MinWidth="900"
+        MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E2D3D">
+
+    <Window.Resources>
+
+        <!-- Цвета приложения -->
+        <SolidColorBrush x:Key="BackgroundBrush" Color="#1E2D3D"/>
+        <SolidColorBrush x:Key="PanelBrush" Color="#263B50"/>
+        <SolidColorBrush x:Key="InputBrush" Color="#1B2B3B"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#45627D"/>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#3D7BD9"/>
+        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#4B8BE8"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#F0F4F8"/>
+        <SolidColorBrush x:Key="SecondaryTextBrush" Color="#AFC0D2"/>
+
+        <!-- Основная кнопка -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="24,12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background"
+                                        Value="{StaticResource PrimaryHoverBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Обычная кнопка -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#334A61"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="7"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#3E5871"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DataGridHeaderStyle"
+               TargetType="DataGridColumnHeader">
+
+            <Setter Property="Background"
+                    Value="#2F4961"/>
+
+            <Setter Property="Foreground"
+                    Value="#F0F4F8"/>
+
+            <Setter Property="FontSize"
+                    Value="13"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+            <Setter Property="Padding"
+                    Value="10,8"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#45627D"/>
+
+            <Setter Property="BorderThickness"
+                    Value="0,0,1,1"/>
+
+        </Style>
+
+        <!-- Заголовок раздела -->
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="FontSize" Value="21"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Описание раздела -->
+        <Style x:Key="SectionDescriptionStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+        </Style>
+
+    </Window.Resources>
+
+
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="62"/>
+        </Grid.RowDefinitions>
+
+
+        <!-- ===================== HEADER ===================== -->
+
+        <Border Grid.Row="0"
+                Background="#263B50"
+                BorderBrush="#354E67"
+                BorderThickness="0,0,0,1">
+
+            <Grid Margin="28,0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+
+                    <TextBlock Text="✉  MailAnalyzer"
+                               Foreground="{StaticResource TextBrush}"
+                               FontSize="27"
+                               FontWeight="Bold"/>
+
+                    <TextBlock Text="Анализируйте. Фильтруйте. Используйте."
+                               Foreground="{StaticResource SecondaryTextBrush}"
+                               FontSize="13"
+                               Margin="2,4,0,0"/>
+
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Text="Быстрый поиск e-mail адресов&#x0a;в ваших текстах"
+                           Foreground="{StaticResource SecondaryTextBrush}"
+                           FontSize="13"
+                           TextAlignment="Right"
+                           VerticalAlignment="Center"/>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ===================== MAIN ===================== -->
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Margin="18">
+
+                <!-- ===== INPUT PANEL ===== -->
+
+                <Border Background="{StaticResource PanelBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="20"
+                        Margin="0,0,0,12">
+
+                    <StackPanel>
+
+                        <!-- Заголовок -->
+
+                        <Grid Margin="0,0,0,15">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+
+                                <TextBlock Text="Исходный текст"
+                                           Style="{StaticResource SectionTitleStyle}"/>
+
+                                <TextBlock Text="Загрузите файл или вставьте текст для анализа"
+                                           Style="{StaticResource SectionDescriptionStyle}"/>
+
+                            </StackPanel>
+
+                            <Button Grid.Column="1"
+                                    Content="📁  Загрузить TXT"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Margin="10,0,10,0"
+                                    Click="LoadFileButton_Click"/>
+
+                            <Button Grid.Column="2"
+                                    Content="🗑  Очистить"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Click="ClearButton_Click"/>
+
+                        </Grid>
+
+
+                        <!-- Поле текста -->
+
+                        <Grid>
+
+                            <TextBox x:Name="InputTextBox"
+                                     Height="170"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Disabled"
+                                     Padding="14"
+                                     FontSize="14"
+                                     Foreground="{StaticResource TextBrush}"
+                                     Background="{StaticResource InputBrush}"
+                                     BorderBrush="{StaticResource BorderBrush}"
+                                     BorderThickness="1"
+                                     TextChanged="InputTextBox_TextChanged"/>
+
+                        </Grid>
+
+
+                        <!-- Кнопка анализа -->
+
+                        <Button Content="▶  Анализировать"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Width="250"
+                                HorizontalAlignment="Center"
+                                Margin="0,18,0,0"
+                                Click="AnalyzeButton_Click"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- ===== RESULTS PANEL ===== -->
+
+                <Border Background="{StaticResource PanelBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="20">
+
+                    <Grid>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+
+                        <!-- Заголовок результатов -->
+
+                        <Grid Grid.Row="0"
+                              Margin="0,0,0,15">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="190"/>
+                                <ColumnDefinition Width="190"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+
+                                <TextBlock Text="Результаты"
+                                           Style="{StaticResource SectionTitleStyle}"/>
+
+                                <TextBlock Text="Найденные e-mail адреса"
+                                           Style="{StaticResource SectionDescriptionStyle}"/>
+
+                            </StackPanel>
+
+
+                            <!-- Счётчик всех -->
+
+                            <Border Grid.Column="1"
+                                    Background="#1E3043"
+                                    CornerRadius="8"
+                                    Padding="14,8"
+                                    Margin="8,0">
+
+                                <StackPanel>
+
+                                    <TextBlock Text="Всего найдено"
+                                               Foreground="{StaticResource SecondaryTextBrush}"
+                                               FontSize="12"/>
+
+                                    <TextBlock x:Name="TotalCountText"
+                                               Text="0"
+                                               Foreground="{StaticResource TextBrush}"
+                                               FontSize="22"
+                                               FontWeight="Bold"/>
+
+                                </StackPanel>
+
+                            </Border>
+
+
+                            <!-- Счётчик уникальных -->
+
+                            <Border Grid.Column="2"
+                                    Background="#1E3043"
+                                    CornerRadius="8"
+                                    Padding="14,8"
+                                    Margin="8,0,0,0">
+
+                                <StackPanel>
+
+                                    <TextBlock Text="Уникальных"
+                                               Foreground="{StaticResource SecondaryTextBrush}"
+                                               FontSize="12"/>
+
+                                    <TextBlock x:Name="UniqueCountText"
+                                               Text="0"
+                                               Foreground="{StaticResource TextBrush}"
+                                               FontSize="22"
+                                               FontWeight="Bold"/>
+
+                                </StackPanel>
+
+                            </Border>
+
+                        </Grid>
+
+
+                        <!-- Таблица результатов -->
+
+                        <DataGrid Grid.Row="1"
+                                  x:Name="ResultsGrid"
+                                  Height="220"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column"
+                                  IsReadOnly="True"
+                                  ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                  Background="{StaticResource InputBrush}"
+                                  Foreground="{StaticResource TextBrush}"
+                                  BorderBrush="{StaticResource BorderBrush}"
+                                  BorderThickness="1"
+                                  GridLinesVisibility="Horizontal">
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="#" 
+                                                    Width="60"
+                                                    Binding="{Binding Number}"/>
+
+                                <DataGridTextColumn Header="E-mail адрес"
+                                                    Width="*"
+                                                    Binding="{Binding Email}"/>
+
+                                <DataGridTextColumn Header="Источник"
+                                                    Width="200"
+                                                    Binding="{Binding Source}"/>
+
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
+
+                        <!-- Кнопки -->
+
+                        <Grid Grid.Row="2"
+                              Margin="0,18,0,0">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0"
+                                    Content="📋  Копировать"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Margin="0,0,12,0"
+                                    Click="CopyButton_Click"/>
+
+                            <Button Grid.Column="1"
+                                    Content="📄  Экспорт TXT"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Margin="0,0,12,0"
+                                    Click="ExportTxtButton_Click"/>
+
+                            <Button Grid.Column="2"
+                                    Content="▦  Экспорт CSV"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Click="ExportCsvButton_Click"/>
+
+                            <Button Grid.Column="4"
+                                    Content="✉  Открыть в почтовом клиенте"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Click="MailClientButton_Click"/>
+
+                        </Grid>
+
+                    </Grid>
+
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ===================== FOOTER ===================== -->
+
+        <Border Grid.Row="2"
+                Background="#263B50"
+                BorderBrush="#354E67"
+                BorderThickness="0,1,0,0">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+
+                <Button Grid.Column="0"
+                        Content="⌂  Главная"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        BorderThickness="0"
+                        Background="Transparent"/>
+
+                <Button Grid.Column="1"
+                        Content="◷  История"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        BorderThickness="0"
+                        Background="Transparent"/>
+
+                <Button Grid.Column="2"
+                        Content="⚙  Настройки"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        BorderThickness="0"
+                        Background="Transparent"/>
+
+                <Button Grid.Column="3"
+                        Content="?  Справка"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        BorderThickness="0"
+                        Background="Transparent"/>
+
+                <TextBlock Grid.Column="4"
+                           Text="MailAnalyzer v1.0"
+                           Foreground="{StaticResource SecondaryTextBrush}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,25,0"/>
+
+            </Grid>
+
+        </Border>
+
     </Grid>
+
 </Window>
