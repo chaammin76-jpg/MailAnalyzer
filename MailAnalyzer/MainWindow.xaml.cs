@@ -22,6 +22,26 @@ public partial class MainWindow : Window
         UpdateCounters();
     }
 
+    // Вставка из буфера
+
+    private void PasteButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!Clipboard.ContainsText())
+        {
+            MessageBox.Show(
+                "Буфер обмена не содержит текста.",
+                "Буфер обмена",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            return;
+        }
+
+        InputTextBox.Text = Clipboard.GetText();
+        InputTextBox.Focus();
+        InputTextBox.CaretIndex = InputTextBox.Text.Length;
+    }
+
     // Загрузка TXT
 
     private void LoadFileButton_Click(object sender, RoutedEventArgs e)
