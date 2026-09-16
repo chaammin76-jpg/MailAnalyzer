@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
+
 
 namespace MailAnalyzer;
 
@@ -108,13 +110,30 @@ public partial class MainWindow : Window
         }
 
         _results.Clear();
-        UpdateCounters();
 
-        MessageBox.Show(
-            "Текст готов к анализу.",
-            "Анализ",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        string emailPattern =
+            "[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@" +
+            "[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?" +
+            "(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+";
+
+        MatchCollection matches = Regex.Matches(
+            text,
+            emailPattern,
+            RegexOptions.IgnoreCase);
+
+        int number = 1;
+
+        foreach (Match match in matches)
+        {
+            _results.Add(new EmailResult
+            {
+                Number = number++,
+                Email = match.Value,
+                Source = "Ручной ввод"
+            });
+        }
+
+        UpdateCounters();
     }
 
 
@@ -329,12 +348,15 @@ public partial class MainWindow : Window
 
     private void UpdateCounters()
     {
-        TotalCountText.Text = _results.Count.ToString();
-        UniqueCountText.Text = _results
-            .Select(result => result.Email)
+        int totalCount = _results.Count;
+
+        int uniqueCount = _results
+            .Select(x => x.Email)
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Count()
-            .ToString();
+            .Count();
+
+        TotalCountText.Text = totalCount.ToString();
+        UniqueCountText.Text = uniqueCount.ToString();
     }
 
     // Временная модель результата
