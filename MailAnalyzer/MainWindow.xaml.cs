@@ -93,22 +93,26 @@ public partial class MainWindow : Window
 
     private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(InputTextBox.Text))
+        string text = InputTextBox.Text;
+
+        if (string.IsNullOrWhiteSpace(text))
         {
             MessageBox.Show(
-                "Введите или загрузите текст для анализа.",
-                "Нет исходного текста",
+                "Введите или вставьте текст для анализа.",
+                "Нет данных",
                 MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+                MessageBoxImage.Information);
 
+            InputTextBox.Focus();
             return;
         }
 
-        // Анализ e-mail будет реализован когда-нибудб
+        _results.Clear();
+        UpdateCounters();
 
         MessageBox.Show(
-            "Модуль анализа e-mail будет подключён на следующем этапе разработки.",
-            "MailAnalyzer",
+            "Текст готов к анализу.",
+            "Анализ",
             MessageBoxButton.OK,
             MessageBoxImage.Information);
     }

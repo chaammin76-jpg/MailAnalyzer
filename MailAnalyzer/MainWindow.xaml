@@ -240,8 +240,51 @@
 
                             <Button Content="📋 Вставить"
                                     Height="36"
-                                    Margin="564,7,344,6"
-                                    Click="PasteButton_Click" Grid.ColumnSpan="3"/>
+                                    Margin="549,7,344,6"
+                                    Click="PasteButton_Click"
+                                    Grid.ColumnSpan="3">
+
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="Foreground" Value="#263B50"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="ButtonBorder"
+                                                            Background="{TemplateBinding Background}"
+                                                            CornerRadius="8"
+                                                            Padding="12,0">
+
+                                                        <ContentPresenter
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                                    </Border>
+
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ButtonBorder"
+                                                                    Property="Background"
+                                                                    Value="#E8EEF5"/>
+                                                        </Trigger>
+
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter TargetName="ButtonBorder"
+                                                                    Property="Background"
+                                                                    Value="#D5E0EC"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+
+                            </Button>
 
                         </Grid>
 
