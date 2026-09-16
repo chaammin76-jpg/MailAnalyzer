@@ -240,21 +240,37 @@
 
                         <!-- Поле текста -->
 
-                        <Grid>
+                        <Grid Height="170">
 
                             <TextBox x:Name="InputTextBox"
-                                     Height="170"
                                      AcceptsReturn="True"
                                      TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto"
                                      HorizontalScrollBarVisibility="Disabled"
-                                     Padding="14"
+                                     Padding="14,14,14,32"
                                      FontSize="14"
                                      Foreground="{StaticResource TextBrush}"
                                      Background="{StaticResource InputBrush}"
                                      BorderBrush="{StaticResource BorderBrush}"
                                      BorderThickness="1"
                                      TextChanged="InputTextBox_TextChanged"/>
+
+                            <TextBlock x:Name="InputPlaceholder"
+                                       Text="Вставьте или введите текст для анализа..."
+                                       Foreground="#71879D"
+                                       FontSize="14"
+                                       Margin="14,14,14,0"
+                                       VerticalAlignment="Top"
+                                       IsHitTestVisible="False"/>   
+
+                            <TextBlock x:Name="CharacterCountText"
+                                       Text="0 символов"
+                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       FontSize="12"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Bottom"
+                                       Margin="0,0,14,10"
+                                       IsHitTestVisible="False"/>
 
                         </Grid>
 

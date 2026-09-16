@@ -271,10 +271,34 @@ public partial class MainWindow : Window
 
     // Изменение текста
 
-    private void InputTextBox_TextChanged(object sender,
-        System.Windows.Controls.TextChangedEventArgs e)
+    private void InputTextBox_TextChanged(
+    object sender,
+    System.Windows.Controls.TextChangedEventArgs e)
     {
-        // Не забыть обновлять здесь счётчик символов и состояние кнопок.
+        bool hasText = !string.IsNullOrEmpty(InputTextBox.Text);
+
+        InputPlaceholder.Visibility = hasText
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+
+        int characterCount = InputTextBox.Text.Length;
+
+        CharacterCountText.Text = $"{characterCount:N0} {GetCharacterWordForm(characterCount)}";
+    }
+
+    private static string GetCharacterWordForm(int count)
+    {
+        int lastTwoDigits = count % 100;
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 14)
+            return "символов";
+
+        return (count % 10) switch
+        {
+            1 => "символ",
+            2 or 3 or 4 => "символа",
+            _ => "символов"
+        };
     }
 
     // Счётчики
