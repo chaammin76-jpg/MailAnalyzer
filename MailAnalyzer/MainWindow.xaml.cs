@@ -13,11 +13,14 @@ using MailAnalyzer.Models;
 using MailAnalyzer.Services;
 using MailAnalyzer.Views;
 
+
 namespace MailAnalyzer;
 
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<EmailResult> _results = new();
+    private readonly SettingsService _settingsService;
+    private AppSettings _settings;
     private readonly HistoryService _historyService;
     private readonly ICollectionView _resultsView;
     private string _currentSource = "Ручной ввод";
@@ -28,6 +31,9 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         ResultsGrid.ItemsSource = _results;
+
+        _settingsService = new SettingsService();
+        _settings = _settingsService.Load();
 
         _historyService = new HistoryService();
 
@@ -138,11 +144,28 @@ public partial class MainWindow : Window
 
         _totalCount = matches.Count;
 
-        var uniqueEmails = matches
-            .Select(match => match.Value)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(email => email, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+        IEnumerable<string> uniqueEmailsQuery = matches
+            .Select(match => match.Value);
+
+        if (_settings.CaseSensitive)
+        {
+            uniqueEmailsQuery = uniqueEmailsQuery
+                .Distinct();
+        }
+        else
+        {
+            uniqueEmailsQuery = uniqueEmailsQuery
+                .Distinct(StringComparer.OrdinalIgnoreCase);
+        }
+
+        if (_settings.SortResults)
+        {
+            uniqueEmailsQuery = _settings.CaseSensitive
+                ? uniqueEmailsQuery.OrderBy(email => email)
+                : uniqueEmailsQuery.OrderBy(email => email, StringComparer.OrdinalIgnoreCase);
+        }
+
+        var uniqueEmails = uniqueEmailsQuery.ToList();
 
         int number = 1;
 
@@ -236,7 +259,8 @@ public partial class MainWindow : Window
             Title = "Сохранить результаты",
             Filter = "Текстовые файлы (*.txt)|*.txt",
             DefaultExt = ".txt",
-            FileName = "emails.txt"
+            FileName = "emails.txt",
+            InitialDirectory = _settings.DefaultSavePath
         };
 
         if (dialog.ShowDialog() != true)
@@ -289,7 +313,8 @@ public partial class MainWindow : Window
             Title = "Сохранить результаты",
             Filter = "CSV-файлы (*.csv)|*.csv",
             DefaultExt = ".csv",
-            FileName = "emails.csv"
+            FileName = "emails.csv",
+            InitialDirectory = _settings.DefaultSavePath
         };
 
         if (dialog.ShowDialog() != true)
@@ -397,6 +422,20 @@ public partial class MainWindow : Window
         };
 
         historyWindow.ShowDialog();
+    }
+
+    // Кнопка настроек
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        var settingsWindow = new SettingsWindow
+        {
+            Owner = this
+        };
+
+        if (settingsWindow.ShowDialog() == true)
+        {
+            _settings = _settingsService.Load();
+        }
     }
 
     // Изменение текста

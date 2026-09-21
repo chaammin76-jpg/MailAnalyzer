@@ -674,8 +674,9 @@
                         Content="⚙  Настройки"
                         Style="{StaticResource SecondaryButtonStyle}"
                         BorderThickness="0"
-                        Background="Transparent"/>
-
+                        Background="Transparent"
+                        Click="SettingsButton_Click"/>
+                
                 <Button Grid.Column="3"
                         Content="?  Справка"
                         Style="{StaticResource SecondaryButtonStyle}"
