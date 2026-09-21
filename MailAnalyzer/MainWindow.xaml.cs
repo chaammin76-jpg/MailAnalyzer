@@ -108,6 +108,7 @@ public partial class MainWindow : Window
         _results.Clear();
 
         _currentSource = "Ручной ввод";
+        _totalCount = 0;
 
         UpdateCounters();
     }
@@ -181,10 +182,7 @@ public partial class MainWindow : Window
 
         UpdateCounters();
 
-        int uniqueCount = _results
-            .Select(x => x.Email)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Count();
+        int uniqueCount = uniqueEmails.Count;
 
         _historyService.Add(new AnalysisHistoryItem
         {
@@ -499,12 +497,11 @@ public partial class MainWindow : Window
 
     private void UpdateCounters()
     {
-        int totalCount = _results.Count;
+        IEnumerable<string> emails = _results.Select(x => x.Email);
 
-        int uniqueCount = _results
-            .Select(x => x.Email)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Count();
+        int uniqueCount = _settings.CaseSensitive
+            ? emails.Distinct().Count()
+            : emails.Distinct(StringComparer.OrdinalIgnoreCase).Count();
 
         TotalCountText.Text = _totalCount.ToString();
         UniqueCountText.Text = uniqueCount.ToString();
