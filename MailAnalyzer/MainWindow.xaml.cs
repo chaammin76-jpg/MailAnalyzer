@@ -9,12 +9,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
+using MailAnalyzer.Models;
+using MailAnalyzer.Services;
+using MailAnalyzer.Views;
 
 namespace MailAnalyzer;
 
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<EmailResult> _results = new();
+    private readonly HistoryService _historyService;
     private readonly ICollectionView _resultsView;
     private string _currentSource = "Ручной ввод";
     private int _totalCount;
@@ -24,6 +28,8 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         ResultsGrid.ItemsSource = _results;
+
+        _historyService = new HistoryService();
 
         _resultsView = CollectionViewSource.GetDefaultView(_results);
 
@@ -151,6 +157,19 @@ public partial class MainWindow : Window
         }
 
         UpdateCounters();
+
+        int uniqueCount = _results
+            .Select(x => x.Email)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count();
+
+        _historyService.Add(new AnalysisHistoryItem
+        {
+            Date = DateTime.Now,
+            Source = _currentSource,
+            Total = matches.Count,
+            Unique = uniqueCount
+        });
     }
 
 
@@ -367,6 +386,17 @@ public partial class MainWindow : Window
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
+    }
+
+    // Кнопка истории
+    private void HistoryButton_Click(object sender, RoutedEventArgs e)
+    {
+        var historyWindow = new HistoryWindow
+        {
+            Owner = this
+        };
+
+        historyWindow.ShowDialog();
     }
 
     // Изменение текста

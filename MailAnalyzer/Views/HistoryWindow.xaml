@@ -1,0 +1,122 @@
+<Window x:Class="MailAnalyzer.Views.HistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="История анализа"
+        Width="800"
+        Height="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#1E2D3D">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DataGrid x:Name="HistoryGrid"
+          Grid.Row="0"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          CanUserAddRows="False"
+          CanUserResizeRows="False"
+          HeadersVisibility="Column"
+          Background="#263B50"
+          Foreground="#F0F4F8"
+          BorderBrush="#45627D"
+          RowBackground="#263B50"
+          AlternatingRowBackground="#263B50"
+          GridLinesVisibility="Horizontal"
+          HorizontalGridLinesBrush="#45627D"
+          VerticalGridLinesBrush="#45627D"
+          SelectionMode="Single"
+          SelectionUnit="FullRow">
+
+            <DataGrid.Resources>
+
+                <!-- Цвет заголовка -->
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#263B50"/>
+                    <Setter Property="Foreground" Value="#AFC0D2"/>
+                    <Setter Property="BorderBrush" Value="#45627D"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Padding" Value="8,5"/>
+                </Style>
+
+                <!-- Цвет строк -->
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="#263B50"/>
+                    <Setter Property="Foreground" Value="#F0F4F8"/>
+                    <Setter Property="BorderBrush" Value="#45627D"/>
+
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#3D7BD9"/>
+                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#304D68"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+
+                <!-- Цвет ячеек -->
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="#F0F4F8"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Padding" Value="6,4"/>
+
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#3D7BD9"/>
+                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+
+            </DataGrid.Resources>
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="Дата"
+                            Binding="{Binding Date, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                            Width="180"/>
+
+                <DataGridTextColumn Header="Источник"
+                            Binding="{Binding Source}"
+                            Width="*"/>
+
+                <DataGridTextColumn Header="Всего"
+                            Binding="{Binding Total}"
+                            Width="100"/>
+
+                <DataGridTextColumn Header="Уникальных"
+                            Binding="{Binding Unique}"
+                            Width="120"/>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,15,0,0">
+
+            <Button Content="Очистить историю"
+                    Width="160"
+                    Height="36"
+                    Margin="0,0,10,0"
+                    Click="ClearHistoryButton_Click"/>
+
+            <Button Content="Закрыть"
+                    Width="120"
+                    Height="36"
+                    Click="CloseButton_Click"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</Window>

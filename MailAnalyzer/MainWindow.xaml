@@ -667,7 +667,8 @@
                         Content="◷  История"
                         Style="{StaticResource SecondaryButtonStyle}"
                         BorderThickness="0"
-                        Background="Transparent"/>
+                        Background="Transparent"
+                        Click="HistoryButton_Click"/>
 
                 <Button Grid.Column="2"
                         Content="⚙  Настройки"
