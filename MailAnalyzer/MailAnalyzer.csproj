@@ -12,6 +12,7 @@
     <Folder Include="ViewModels\" />
     <Folder Include="Helpers\" />
     <Folder Include="Resources\" />
+    <Folder Include="Tests\" />
   </ItemGroup>
 
   <ItemGroup>
