@@ -343,8 +343,8 @@ public partial class MainWindow : Window
             ",",
             selectedResults.Select(result => result.Email));
 
-        string subject = "MailAnalyzer";
-        string body = "Здравствуйте!";
+        string subject = SubjectTextBox.Text.Trim();
+        string body = BodyTextBox.Text;
 
         string mailto =
             $"mailto:{recipients}" +
