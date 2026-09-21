@@ -1,3 +1,0 @@
-hello@example.com
-admin@example.com
-user@test.ru
