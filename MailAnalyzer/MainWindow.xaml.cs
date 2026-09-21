@@ -16,6 +16,7 @@ public partial class MainWindow : Window
 {
     private readonly ObservableCollection<EmailResult> _results = new();
     private readonly ICollectionView _resultsView;
+    private string _currentSource = "Ручной ввод";
     private int _totalCount;
 
     public MainWindow()
@@ -65,13 +66,15 @@ public partial class MainWindow : Window
 
         try
         {
+            _currentSource = Path.GetFileName(dialog.FileName);
+
             InputTextBox.Text = File.ReadAllText(
                 dialog.FileName,
                 Encoding.UTF8);
 
             MessageBox.Show(
-                "Файл успешно загружен.",
-                "MailAnalyzer",
+                $"Файл «{_currentSource}» успешно загружен.",
+                "Загрузка файла",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }
@@ -90,9 +93,9 @@ public partial class MainWindow : Window
     private void ClearButton_Click(object sender, RoutedEventArgs e)
     {
         InputTextBox.Clear();
-
         _results.Clear();
-        _totalCount = 0;
+
+        _currentSource = "Ручной ввод";
 
         UpdateCounters();
     }
@@ -143,7 +146,7 @@ public partial class MainWindow : Window
             {
                 Number = number++,
                 Email = email,
-                Source = "Ручной ввод"
+                Source = _currentSource
             });
         }
 
