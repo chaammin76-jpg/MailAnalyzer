@@ -14,6 +14,7 @@ namespace MailAnalyzer;
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<EmailResult> _results = new();
+    private int _totalCount;
 
     public MainWindow()
     {
@@ -87,6 +88,7 @@ public partial class MainWindow : Window
         InputTextBox.Clear();
 
         _results.Clear();
+        _totalCount = 0;
 
         UpdateCounters();
     }
@@ -121,14 +123,22 @@ public partial class MainWindow : Window
             emailPattern,
             RegexOptions.IgnoreCase);
 
+        _totalCount = matches.Count;
+
+        var uniqueEmails = matches
+            .Select(match => match.Value)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(email => email, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
         int number = 1;
 
-        foreach (Match match in matches)
+        foreach (string email in uniqueEmails)
         {
             _results.Add(new EmailResult
             {
                 Number = number++,
-                Email = match.Value,
+                Email = email,
                 Source = "Ручной ввод"
             });
         }
@@ -355,7 +365,7 @@ public partial class MainWindow : Window
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Count();
 
-        TotalCountText.Text = totalCount.ToString();
+        TotalCountText.Text = _totalCount.ToString();
         UniqueCountText.Text = uniqueCount.ToString();
     }
 
