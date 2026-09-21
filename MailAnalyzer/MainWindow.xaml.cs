@@ -162,22 +162,37 @@ public partial class MainWindow : Window
         {
             MessageBox.Show(
                 "Нет результатов для копирования.",
-                "MailAnalyzer",
+                "Копирование",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
 
             return;
         }
 
+        if (ResultsGrid.SelectedItems.Count == 0)
+        {
+            MessageBox.Show(
+                "Выберите один или несколько e-mail адресов.",
+                "Копирование",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            return;
+        }
+
+        var selectedResults = ResultsGrid.SelectedItems
+            .OfType<EmailResult>()
+            .ToList();
+
         var text = string.Join(
             Environment.NewLine,
-            _results.Select(result => result.Email));
+            selectedResults.Select(result => result.Email));
 
         Clipboard.SetText(text);
 
         MessageBox.Show(
-            "Адреса скопированы в буфер обмена.",
-            "MailAnalyzer",
+            $"Скопировано адресов: {selectedResults.Count}.",
+            "Копирование",
             MessageBoxButton.OK,
             MessageBoxImage.Information);
     }

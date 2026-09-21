@@ -462,6 +462,8 @@
                                       AutoGenerateColumns="False"
                                       CanUserAddRows="False"
                                       CanUserSortColumns="True"
+                                      SelectionMode="Extended"
+                                      SelectionUnit="FullRow"
                                       HeadersVisibility="Column"
                                       IsReadOnly="True"
                                       ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
