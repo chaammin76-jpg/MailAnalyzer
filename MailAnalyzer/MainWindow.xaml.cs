@@ -316,21 +316,46 @@ public partial class MainWindow : Window
         if (_results.Count == 0)
         {
             MessageBox.Show(
-                "Нет адресов для открытия в почтовом клиенте.",
-                "MailAnalyzer",
+                "Нет результатов для открытия почтового клиента.",
+                "Почтовый клиент",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
 
             return;
         }
 
-        var address = _results.First().Email;
+        if (ResultsGrid.SelectedItems.Count == 0)
+        {
+            MessageBox.Show(
+                "Выберите один или несколько e-mail адресов.",
+                "Почтовый клиент",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            return;
+        }
+
+        var selectedResults = ResultsGrid.SelectedItems
+            .OfType<EmailResult>()
+            .ToList();
+
+        string recipients = string.Join(
+            ",",
+            selectedResults.Select(result => result.Email));
+
+        string subject = "MailAnalyzer";
+        string body = "Здравствуйте!";
+
+        string mailto =
+            $"mailto:{recipients}" +
+            $"?subject={Uri.EscapeDataString(subject)}" +
+            $"&body={Uri.EscapeDataString(body)}";
 
         try
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = $"mailto:{address}",
+                FileName = mailto,
                 UseShellExecute = true
             });
         }
