@@ -433,22 +433,43 @@
                         </Grid>
 
 
-                        <!-- Таблица результатов -->
+                        <!-- Поиск и таблица результатов -->
 
-                        <DataGrid Grid.Row="1"
-                                  x:Name="ResultsGrid"
-                                  Height="220"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="False"
-                                  CanUserSortColumns="True"
-                                  HeadersVisibility="Column"
-                                  IsReadOnly="True"
-                                  ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-                                  Background="{StaticResource InputBrush}"
-                                  Foreground="{StaticResource TextBrush}"
-                                  BorderBrush="{StaticResource BorderBrush}"
-                                  BorderThickness="1"
-                                  GridLinesVisibility="Horizontal">
+                        <Grid Grid.Row="1"
+                                Margin="0,0,0,0">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="220"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Поиск -->
+                            <TextBox x:Name="SearchTextBox"
+                                     Grid.Row="0"
+                                     Height="36"
+                                     Margin="0,0,0,10"
+                                     Padding="12,8"
+                                     Background="{StaticResource InputBrush}"
+                                     Foreground="{StaticResource TextBrush}"
+                                     BorderBrush="{StaticResource BorderBrush}"
+                                     BorderThickness="1"
+                                     FontSize="13"
+                                     TextChanged="SearchTextBox_TextChanged"/>
+
+                            <!-- Таблица -->
+                            <DataGrid Grid.Row="1"
+                                      x:Name="ResultsGrid"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      CanUserSortColumns="True"
+                                      HeadersVisibility="Column"
+                                      IsReadOnly="True"
+                                      ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                      Background="{StaticResource InputBrush}"
+                                      Foreground="{StaticResource TextBrush}"
+                                      BorderBrush="{StaticResource BorderBrush}"
+                                      BorderThickness="1"
+                                      GridLinesVisibility="Horizontal">
 
                             <DataGrid.Resources>
 
@@ -489,21 +510,25 @@
 
                             <DataGrid.Columns>
 
-                                <DataGridTextColumn Header="#" 
-                                                    Width="60"
-                                                    Binding="{Binding Number}"/>
+                                    <DataGridTextColumn Header="#"
+                                                        Width="60"
+                                                        SortMemberPath="Number"
+                                                        Binding="{Binding Number}"/>
 
-                                <DataGridTextColumn Header="E-mail адрес"
-                                                    Width="*"
-                                                    Binding="{Binding Email}"/>
+                                    <DataGridTextColumn Header="E-mail адрес"
+                                                        Width="*"
+                                                        SortMemberPath="Email"
+                                                        Binding="{Binding Email}"/>
 
-                                <DataGridTextColumn Header="Источник"
-                                                    Width="200"
-                                                    Binding="{Binding Source}"/>
+                                    <DataGridTextColumn Header="Источник"
+                                                        Width="200"
+                                                        SortMemberPath="Source"
+                                                        Binding="{Binding Source}"/>
 
-                            </DataGrid.Columns>
+                                </DataGrid.Columns>
 
                         </DataGrid>
+                    </Grid>
 
 
                         <!-- Кнопки -->

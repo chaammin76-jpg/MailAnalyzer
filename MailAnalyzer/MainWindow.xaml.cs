@@ -1,19 +1,21 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-
+using System.Windows.Data;
 
 namespace MailAnalyzer;
 
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<EmailResult> _results = new();
+    private readonly ICollectionView _resultsView;
     private int _totalCount;
 
     public MainWindow()
@@ -21,6 +23,8 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         ResultsGrid.ItemsSource = _results;
+
+        _resultsView = CollectionViewSource.GetDefaultView(_results);
 
         UpdateCounters();
     }
@@ -337,6 +341,31 @@ public partial class MainWindow : Window
         int characterCount = InputTextBox.Text.Length;
 
         CharacterCountText.Text = $"{characterCount:N0} {GetCharacterWordForm(characterCount)}";
+    }
+
+    // Поиск по результатам
+    private void SearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        string searchText = SearchTextBox.Text.Trim();
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            _resultsView.Filter = null;
+        }
+        else
+        {
+            _resultsView.Filter = item =>
+            {
+                if (item is not EmailResult result)
+                    return false;
+
+                return result.Email.Contains(
+                    searchText,
+                    StringComparison.OrdinalIgnoreCase);
+            };
+        }
+
+        _resultsView.Refresh();
     }
 
     private static string GetCharacterWordForm(int count)
